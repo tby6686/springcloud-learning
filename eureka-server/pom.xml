@@ -50,6 +50,65 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <!-- 当我们执行mvn package时，执行 build、tag 操作，当执行mvn deploy时，执行build、tag、push 操作。如果我们想跳过 docker 某个过程时，只需要：
+                -DskipDockerBuild 跳过 build 镜像
+                -DskipDockerTag 跳过 tag 镜像
+                -DskipDockerPush 跳过 push 镜像
+                -DskipDocker 跳过整个阶段-->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <!--构建-->
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>tag-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <image>${project.artifactId}:${project.version}</image>
+                            <!--格式和harbor 服务器ip和仓库名-->
+                            <newName>127.0.0.1/spring-cloud-learning/${project.artifactId}:${project.version}</newName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>push-image</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <imageName>127.0.0.1/spring-cloud-learning/${project.artifactId}:${project.version}</imageName>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <imageName>${project.artifactId}:${project.version}</imageName>
+                    <dockerHost>http://120.79.174.128:2375</dockerHost>
+                    <!-- 指定 Dockerfile 路径-->
+                    <!--<dockerDirectory>${basedir}/docker</dockerDirectory>-->
+                    <baseImage>java:8</baseImage>
+                    <entryPoint>["java", "-jar","/${project.build.finalName}.jar"]</entryPoint>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
