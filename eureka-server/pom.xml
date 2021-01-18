@@ -88,7 +88,7 @@
                             <goal>push</goal>
                         </goals>
                         <configuration>
-                            <imageName>127.0.0.1/spring-cloud-learning/${project.artifactId}:${project.version}</imageName>
+                            <imageName>127.0.0.1:8080/spring-cloud-learning/${project.artifactId}:${project.version}</imageName>
                         </configuration>
                     </execution>
                 </executions>
